@@ -1,36 +1,40 @@
 import pypdf
 from googletrans import Translator
 
-def extract_text_from_pdf(pdf_path):
-    text = ""
-    with open(pdf_path, 'rb') as file:
-        reader = pypdf.PdfReader(file)
-        for page_num in range(reader.numPages):
-            page = reader.Page[page_num]
-            text += page.extract_text()
-    return text
-
 def remove_prefix_suffix(text):
-    # Assuming prefix and suffix are known patterns, you can replace them with empty string
-    # Adjust this function according to your specific needs
-    prefix = "Prefix_to_remove"
-    suffix = "Suffix_to_remove"
-    return text.replace(prefix, "").replace(suffix, "")
+    # Split text into lines
+    lines = text.split("\n")
+    
+    # Remove the first and last lines
+    removed = "\n".join(lines[1:-2])
+    
+    return removed
 
 def translate_text(text, target_language):
     translator = Translator()
     translation = translator.translate(text, dest=target_language)
     return translation.text
 
-def main(pdf_path, target_language='ko', output_file='translated_output.txt'):
-    # Step 1: Extract text from PDF
-    extracted_text = extract_text_from_pdf(pdf_path)
+def extract_text_from_pdf(pdf_path, target_language):
+    result = ""
+    with open(pdf_path, 'rb') as file:
+        reader = pypdf.PdfReader(file)
+        for page in reader.pages:
+            text = page.extract_text()
+            pure_text = remove_prefix_suffix(text)
+            result += translate_text(pure_text, target_language)
+    return result
+
+def main(pdf_path, target_language, output_file):
+    translated_text = ""
+
+    # Step 0: Extranct the entire text from PDF
+    reader = pypdf.PdfReader(pdf_path)
     
-    # Step 2: Remove prefix and suffix
-    processed_text = remove_prefix_suffix(extracted_text)
-    
-    # Step 3: Translate text
-    translated_text = translate_text(processed_text, target_language)
+    for page in reader.pages:
+        text = page.extract_text()
+        remove_text = remove_prefix_suffix(text)
+        translated_text += translate_text(remove_text, target_language)
     
     # Step 4: Save result to file
     with open(output_file, 'w', encoding='utf-8') as file:
@@ -38,7 +42,7 @@ def main(pdf_path, target_language='ko', output_file='translated_output.txt'):
 
 if __name__ == "__main__":
     # Provide the path to the PDF file
-    pdf_path = "path/to/your/pdf/file.pdf"
+    pdf_path = "./Titan-17.pdf"
     
     # Set the target language (default is Korean 'ko')
     target_language = 'ko'
