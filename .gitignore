@@ -2,4 +2,4 @@
 test.py
 
 # Local result
-./translate/*
+./translate/*.txt

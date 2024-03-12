@@ -41,7 +41,7 @@ with open(RESULT_PATH, "w+", encoding="utf-8") as f:
 
         try:
             translated = model.generate_content("Translate this to Korean:\n" + reformatted)
-            print(f"[*] translated Page {i+1} Successfully:\n{translated.text}")
+            print(f"[*] translated Page {i+1} Successfully")
             f.write(translated.text)
             i += 1
         except IOError as F:
