@@ -10,15 +10,16 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description="Process PDF and translate text.")
     parser.add_argument("pdf_file", help="Path to the PDF file")
     parser.add_argument("output_file", help="Path to the output file")
-    parser.add_argument("-p", "--param", type=int, help="Optional parameter")
+    parser.add_argument("-p", "--param", type=int, help="Starting page number")
+    parser.add_argument("-I", "--init", help="Initial prompt")
     return parser.parse_args()
 
 def main():
     args = parse_arguments()
 
     GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
-    FILE_PATH = "./pdfs/" + args.pdf_file + ".pdf"
-    RESULT_PATH = "./translate/" + args.output_file + ".txt"
+    FILE_PATH = "./pdfs/" + args.pdf_file
+    RESULT_PATH = "./translate/" + args.output_file
     i = (args.param - 1) if args.param is not None and args.param > 0 else 0
 
     InitialPrompt = """
@@ -27,7 +28,7 @@ def main():
             The texts that I give you may be unproperly line-broken and spaced.
             If so, you figure out the context of the texts and properly break the line and put spaces.
             Then Translate it to Korean. You ready?
-        """
+        """ if args.init is None else args.init
 
     genai.configure(api_key=GOOGLE_API_KEY)
 
