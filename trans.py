@@ -53,7 +53,7 @@ def main():
             try:
                 translated = model.generate_content("Translate this to Korean:\n" + reformatted)
                 print(f"[*] translated Page {i+1} Successfully")
-                f.write(translated.text)
+                f.write(translated.text + "\n")
                 i += 1
             except IOError as F:
                 print("[!] File I/O error occured:" + F)
