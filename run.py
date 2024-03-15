@@ -3,6 +3,7 @@ import os
 import sys
 import time
 import argparse
+import tqdm
 from process import process_text
 
 import google.generativeai as genai
@@ -59,11 +60,16 @@ def main():
                 f.write(translated.text + "\n")
                 i += 1
             except IOError as F:
-                print("[!] File I/O error occured:" + F)
+                print(f"[!] File I/O error occured: {F}")
                 sys.exit(1)
-            except:
-                print("[!] AI call error occured. Wait a moment...")
-                time.sleep(10)
+            except Exception as e:
+                print(f"[!] Error occurred: {e}")
+                if "500 An internal error" in str(e):
+                    time.sleep(10)
+                else:
+                    stop = input("[?] Unexpected error occurred. Would you like to continue? (y/n) :")
+                    if "y" not in stop:
+                        sys.exit(1)
             
 if __name__ == "__main__":
     main()
