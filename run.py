@@ -35,7 +35,6 @@ def main():
     else:
         page_last = len(reader.pages)
 
-
     InitialPrompt = INITIAL_FILE.read()
 
     genai.configure(api_key=GOOGLE_API_KEY)
@@ -43,22 +42,24 @@ def main():
 
     InitialResponse = model.generate_content(InitialPrompt)
 
-    print(f"Start: {InitialResponse.text}")
+    print(f"[*] Translation started with : {InitialPrompt}")
 
-
+    pbar = tqdm.tqdm(range(page_last - i), ncols=50, leave=False)
     with open(RESULT_PATH, "w+", encoding="utf-8") as f:
         while True:
             if i >= page_last:
-                print("[*] Translation Done.")
+                print("\n[*] Translation Done.")
+                pbar.close()
                 break
             
             processed = process_text(reader.pages[i].extract_text())
 
             try:
                 translated = model.generate_content("Translate this to Korean:\n" + processed)
-                print(f"[*] translated Page {i+1} Successfully")
+                # print(f"[*] translated Page {i+1} Successfully")
                 f.write(translated.text + "\n")
                 i += 1
+                pbar.update()
             except IOError as F:
                 print(f"[!] File I/O error occured: {F}")
                 sys.exit(1)
