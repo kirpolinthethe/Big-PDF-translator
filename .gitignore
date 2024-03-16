@@ -4,4 +4,4 @@ test.py
 # Local result
 translate/*.txt
 __pycache__/
-pdfs/
+pdfs/*
